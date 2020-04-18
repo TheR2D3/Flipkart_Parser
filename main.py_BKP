@@ -17,9 +17,8 @@ import nltk
 from bokeh.models import Paragraph
 import collections
 from bokeh.models.widgets import Div
-import nltk
-from textblob import TextBlob
-import logging
+import os
+#print(os.path.abspath(os.getcwd()))
 
 nltk.download('punkt')
 
@@ -84,34 +83,18 @@ def extract_ngrams(data, num, top_n):
     word_list = ngrams_XFreq.most_common(top_n)
     return(word_list)
 
-def get_nouns(input_string):
-    tokenized = nltk.word_tokenize(input_string)
-    noun_list = [word for (word, pos) in nltk.pos_tag(tokenized) if(pos[:2] == 'NN')]
-    dummy_space = " "
-    noun_sentence = dummy_space.join(noun_list)
-    return(noun_sentence)
-
 def update_reviews(attr, old, new):
 
     data_set = pd.read_csv('Outputs/data_set.csv')
     i = int(star_rating.value)
-
-    #output_review_list = extract_ngrams(str(data_set[(data_set['Star_count'] == i)]['Review'].values),2,3)
-    data_set_blob = data_set.copy()
-    data_set_blob['Noun_sentences'] = data_set_blob['Review'].apply(lambda x:get_nouns(x))
-
-    n_gram_blob = TextBlob(str(data_set_blob[(data_set_blob['Star_count'] == i)]['Noun_sentences'].values))    
-
-    #Styling the paragraph element
-    text1 = Paragraph(style={'font-variant': 'small-caps','font-family': "Tahoma"})
+    output_review_list = extract_ngrams(str(data_set[(data_set['Star_count'] == i)]['Review'].values),2,3)
+    
+    text1 = Paragraph(style={'font-variant': 'small-caps',
+          'font-family': "Tahoma"})
     text1.text=""    
-
-    #review1 = text_cleaner(str(n_gram_blob.ngrams(1)[0]))
-    #review2 = text_cleaner(str(n_gram_blob.ngrams(1)[1]))
-                
-    review1 = text_cleaner(n_gram_blob.ngrams(1)[1][0])
-    review2 = text_cleaner(n_gram_blob.ngrams(1)[2][0])
-
+    review1 = text_cleaner(str(output_review_list[0]))
+    review2 = text_cleaner(str(output_review_list[1]))
+    #review3 = text_cleaner(str(output_review_list[2])
     text1.text = "Top "+str(i)+" star reviews feel: "+review1+", followed by "+review2    
     curdoc().add_root(Row(text1))
 

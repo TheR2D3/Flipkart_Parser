@@ -22,7 +22,7 @@ def getURLs(main_url):
     total_pages = soup.find_all("div", class_="_2zg3yZ _3KSYCY")[0]
     total_pages_count = total_pages.find_all("span")[0].get_text().split()[3]
     #Page nos have comma, so removing the comma
-    total_pages_count = int(re.sub(",","",total_pages_count))
+    total_pages_count = int(re.sub(",","",total_pages_count)) + 1
     
     #Generate pages having review URLs
     review_urls = []    
@@ -134,11 +134,11 @@ def get_dataset_from_url(main_url):
     review_urls = getURLs(main_url)
     temp_review_urls = []
 
-    #Restricting the scrapte to just 200 pages because Flipkart blocks the URL after multiple URL hits
-    if (len(review_urls) < 150):
+    #Restricting the scrapte to just 150 pages because Flipkart blocks the URL after multiple URL hits
+    if (len(review_urls) < 200):
         temp_review_urls = review_urls
     else:
-        temp_review_urls = review_urls[0:150]
+        temp_review_urls = review_urls[0:200]
 
     
     #Initialize all the lists
